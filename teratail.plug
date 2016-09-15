@@ -1,0 +1,13 @@
+[Core]
+module = teratail
+name = Teratail
+
+[Documentation]
+description = Fetch and notify teratail's newer questions
+
+[Python]
+version = 3
+
+[Errbot]
+max = 4.3.3
+

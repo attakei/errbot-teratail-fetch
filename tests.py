@@ -10,5 +10,10 @@ class TestPlugin(object):
 
     def test_config(self, testbot):
         plugin = self.fetch_plugin(testbot)
-        print(plugin)
         assert plugin.config['NOTIFY_TO'] == '#general' 
+
+    def test_fetch_questions(self, testbot):
+        plugin = self.fetch_plugin(testbot)
+        data = plugin.fetch_questions('Python')
+        q_ = data[0]
+        assert q_.url.startswith('https://teratail.com/questions/')

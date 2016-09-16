@@ -1,5 +1,6 @@
 from errbot import BotPlugin, botcmd, arg_botcmd, webhook
 from itertools import chain
+import requests
 
 
 CONFIG_TEMPLATE = {
@@ -8,6 +9,17 @@ CONFIG_TEMPLATE = {
     # Fetching question's tag 
     'CHECK_TAG': 'Python',
 }
+
+
+class TeratailQuestion(object):
+    def __init__(self, id, title):
+        self.id = id
+        self.title = title
+    
+    @property
+    def url(self):
+        return 'https://teratail.com/questions/{}'.format(self.id)
+
 
 class Teratail(BotPlugin):
     """
@@ -108,3 +120,13 @@ class Teratail(BotPlugin):
                 name=args.name,
                 number=args.favorite_number,
             )
+
+
+    def fetch_questions(self, tag):
+        url = 'https://teratail.com/api/v1/tags/{}/questions'.format(tag)
+        resp = requests.get(url)
+        data = resp.json()
+        return [
+            TeratailQuestion(q_['id'], q_['title'])
+            for q_ in data['questions']
+        ]

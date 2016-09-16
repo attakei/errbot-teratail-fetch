@@ -10,7 +10,7 @@ class TestPlugin(object):
 
     def test_config(self, testbot):
         plugin = self.fetch_plugin(testbot)
-        assert plugin.config['NOTIFY_TO'] == '#general' 
+        assert plugin.config['NOTIFY_TO'] == '#general'
 
     def test_fetch_questions(self, testbot):
         plugin = self.fetch_plugin(testbot)

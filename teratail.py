@@ -15,7 +15,7 @@ class TeratailQuestion(object):
     def __init__(self, id, title):
         self.id = id
         self.title = title
-    
+
     @property
     def url(self):
         return 'https://teratail.com/questions/{}'.format(self.id)

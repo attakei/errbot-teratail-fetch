@@ -64,8 +64,8 @@ class Teratail(BotPlugin):
         # Init
         msg_base = '【{}】{}\n{}'
         msg_to = self.build_identifier(self.config['NOTIFY_TO'])
-        latest_id = self.get('latest_ids', {}).get(tag, 0)
         tag = self.config['CHECK_TAG']
+        latest_id = self.get('latest_ids', {}).get(tag, 0)
         self.log.debug('Start fetch by tag "{}"'.format(tag))
         # Fetch and sort questions
         questions = self.fetch_questions(tag)

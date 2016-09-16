@@ -5,7 +5,7 @@ import requests
 
 CONFIG_TEMPLATE = {
     # Notify fetched questions
-    'NOTIFY_TO': '#general', # For slack setting
+    'NOTIFY_TO': 'TestPerson', # For slack setting
     # Fetching question's tag 
     'CHECK_TAG': 'Python',
 }
@@ -33,6 +33,7 @@ class Teratail(BotPlugin):
         You should delete it if you're not using it to override any default behaviour
         """
         super(Teratail, self).activate()
+        self.start_poller(60, self.fetch_and_post)
 
     def deactivate(self):
         """
@@ -121,12 +122,23 @@ class Teratail(BotPlugin):
                 number=args.favorite_number,
             )
 
-
     def fetch_questions(self, tag):
-        url = 'https://teratail.com/api/v1/tags/{}/questions'.format(tag)
+        url = 'https://teratail.com/api/v1/tags/{}/questions?limit=5&page=1'.format(tag)
         resp = requests.get(url)
         data = resp.json()
         return [
             TeratailQuestion(q_['id'], q_['title'])
             for q_ in data['questions']
         ]
+
+    def fetch_and_post(self):
+        print('tag')
+        tag = self.config['CHECK_TAG']
+        print('tag')
+        questions = self.fetch_questions(tag)
+        print(questions)
+        msg_base = '【{}】{}\n{}'
+        msg_to = self.build_identifier(self.config['NOTIFY_TO'])
+        for q_ in questions:
+            msg = msg_base.format(tag, q_.title, q_.url)
+            self.send(msg_to, msg)

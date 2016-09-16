@@ -5,7 +5,7 @@ import requests
 
 CONFIG_TEMPLATE = {
     # Notify fetched questions
-    'NOTIFY_TO': 'TestPerson', # For slack setting
+    'NOTIFY_TO': '#general', # For slack setting
     # Fetching question's tag 
     'CHECK_TAG': 'Python',
 }

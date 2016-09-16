@@ -132,13 +132,23 @@ class Teratail(BotPlugin):
         ]
 
     def fetch_and_post(self):
-        print('tag')
-        tag = self.config['CHECK_TAG']
-        print('tag')
-        questions = self.fetch_questions(tag)
-        print(questions)
+        # Init
+        self.log.debug('Start fetch by tag "{}"'.format(tag))
         msg_base = '【{}】{}\n{}'
         msg_to = self.build_identifier(self.config['NOTIFY_TO'])
+        latest_id = self.get('latest_ids', {}).get(tag, 0)
+        tag = self.config['CHECK_TAG']
+        # Fetch and sort questions
+        questions = self.fetch_questions(tag)
+        questions = sorted(questions, key=lambda q: q.id)
+        # Post only newer questions
         for q_ in questions:
+            if q_.id <= latest_id:
+                continue
             msg = msg_base.format(tag, q_.title, q_.url)
             self.send(msg_to, msg)
+        # Save latest question-id for tag
+        latest_ids = self.get('latest_ids', {})
+        latest_ids[tag] = questions[-1].id
+        self['latest_ids'] = latest_ids
+        self.log.debug('End fetch by tag "{}"'.format(tag))

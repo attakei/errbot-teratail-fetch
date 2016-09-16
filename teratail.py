@@ -33,7 +33,7 @@ class Teratail(BotPlugin):
         You should delete it if you're not using it to override any default behaviour
         """
         super(Teratail, self).activate()
-        self.start_poller(60, self.fetch_and_post)
+        self.start_poller(300, self.fetch_and_post)
 
     def configure(self, configuration):
         if configuration is not None and configuration != {}:

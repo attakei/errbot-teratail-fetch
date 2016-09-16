@@ -1,5 +1,13 @@
 from errbot import BotPlugin, botcmd, arg_botcmd, webhook
+from itertools import chain
 
+
+CONFIG_TEMPLATE = {
+    # Notify fetched questions
+    'NOTIFY_TO': '#general', # For slack setting
+    # Fetching question's tag 
+    'CHECK_TAG': 'Python',
+}
 
 class Teratail(BotPlugin):
     """
@@ -22,15 +30,21 @@ class Teratail(BotPlugin):
         """
         super(Teratail, self).deactivate()
 
+    def configure(self, configuration):
+        if configuration is not None and configuration != {}:
+            config = dict(chain(CONFIG_TEMPLATE.items(),
+                                configuration.items()))
+        else:
+            config = CONFIG_TEMPLATE
+        super(Teratail, self).configure(config)
+
     def get_configuration_template(self):
         """
         Defines the configuration structure this plugin supports
 
         You should delete it if your plugin doesn't use any configuration like this
         """
-        return {'EXAMPLE_KEY_1': "Example value",
-                'EXAMPLE_KEY_2': ["Example", "Value"]
-               }
+        return CONFIG_TEMPLATE
 
     def check_configuration(self, configuration):
         """

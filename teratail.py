@@ -62,11 +62,11 @@ class Teratail(BotPlugin):
 
     def fetch_and_post(self):
         # Init
-        self.log.debug('Start fetch by tag "{}"'.format(tag))
         msg_base = '【{}】{}\n{}'
         msg_to = self.build_identifier(self.config['NOTIFY_TO'])
         latest_id = self.get('latest_ids', {}).get(tag, 0)
         tag = self.config['CHECK_TAG']
+        self.log.debug('Start fetch by tag "{}"'.format(tag))
         # Fetch and sort questions
         questions = self.fetch_questions(tag)
         questions = sorted(questions, key=lambda q: q.id)

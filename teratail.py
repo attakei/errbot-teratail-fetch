@@ -7,7 +7,7 @@ CONFIG_TEMPLATE = {
     # Notify fetched questions
     'NOTIFY_TO': '#general',  # For slack setting
     # Fetching question's tag
-    'CHECK_TAG': 'Python',
+    'CHECK_TAGS': ['Python', ],
 }
 
 
@@ -61,23 +61,24 @@ class Teratail(BotPlugin):
         ]
 
     def fetch_and_post(self):
+        self.log.debug('Start fetch')
         # Init
-        msg_base = '【{}】{}\n{}'
+        msg_base = '【New!】{}\n{}'
         msg_to = self.build_identifier(self.config['NOTIFY_TO'])
-        tag = self.config['CHECK_TAG']
-        latest_id = self.get('latest_ids', {}).get(tag, 0)
-        self.log.debug('Start fetch by tag "{}"'.format(tag))
+        latest_ids = self..get('latest_ids', {})
+        questions = {}
         # Fetch and sort questions
-        questions = self.fetch_questions(tag)
-        questions = sorted(questions, key=lambda q: q.id)
+        for tag in self.config['CHECK_TAGS']:
+            latest_id = latest_ids.get(tag, 0)
+            for q_ in self.fetch_questions(tag):
+                if q_.id <= latest_id:
+                    continue
+                questions.setdefault(q_.id, q_)
+            latest_ids[tag] = latest_id
         # Post only newer questions
-        for q_ in questions:
-            if q_.id <= latest_id:
-                continue
-            msg = msg_base.format(tag, q_.title, q_.url)
+        for q_ in questions.values():
+            msg = msg_base.format(q_.title, q_.url)
             self.send(msg_to, msg)
         # Save latest question-id for tag
-        latest_ids = self.get('latest_ids', {})
-        latest_ids[tag] = questions[-1].id
-        self['latest_ids'] = latest_ids
-        self.log.debug('End fetch by tag "{}"'.format(tag))
+        self['latest_id'] = latest_ids
+        self.log.debug('End fetch')
